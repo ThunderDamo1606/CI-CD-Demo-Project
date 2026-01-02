@@ -1,0 +1,43 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️ Code checkout
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️ Python install
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 3️ Auto version generate
+      # Example output → 1.0.7 (every run increases)
+      - name: Generate Version
+        run: |
+          echo "VERSION=1.0.${{ github.run_number }}" >> $GITHUB_ENV
+
+      # 4️ Show version in logs
+      - name: Show Version
+        run: |
+          echo "Current Version: $VERSION"
+
+      # 5️ Dependencies install
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # 6️ Run tests
+      - name: Run tests
+        run: |
+          pytest
